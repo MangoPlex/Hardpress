@@ -1,5 +1,5 @@
 # Hardpress
-_Compression algorithm_
+_Compression library for Java_
 
 ## Algorithms included
 - Huffman Coding (single byte)
