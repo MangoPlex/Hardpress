@@ -6,13 +6,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import hardpress.Compression;
+import hardpress.LosslessCompression;
 import hardpress.binary.BinaryReader;
 import hardpress.binary.BinaryWriter;
 import hardpress.binary.BitReader;
 import hardpress.binary.BitWriter;
 
-public class HuffmanCoding extends Compression {
+public class HuffmanCoding extends LosslessCompression {
 
     @Override
     public String getName() { return "Huffman Coding"; }
@@ -20,6 +20,7 @@ public class HuffmanCoding extends Compression {
     @Override
     public void compressData(byte[] data, OutputStream output) throws IOException {
         BinaryWriter writer = new BinaryWriter(output);
+        BitWriter bitWriter = new BitWriter(output);
         writer.writeVarUint(data.length);
         if (data.length == 0) return;
         
@@ -46,7 +47,7 @@ public class HuffmanCoding extends Compression {
         }
         
         if (nodes.get(0) instanceof ByteNode bn) {
-            bn.writeNodeData(output);
+            bn.writeNodeData(bitWriter);
             return;
         }
         ConnectNode tree = (ConnectNode) nodes.get(0);
@@ -67,9 +68,7 @@ public class HuffmanCoding extends Compression {
         }
         
         // Step 3: Compress data
-        tree.writeNodeData(output);
-        
-        BitWriter bitWriter = new BitWriter(output);
+        tree.writeNodeData(bitWriter);
         for (int i = 0; i < data.length; i++) bitWriter.writeBits(bytes[Byte.toUnsignedInt(data[i])].bits);
         bitWriter.flush();
     }
@@ -82,11 +81,12 @@ public class HuffmanCoding extends Compression {
     @Override
     public byte[] uncompressData(InputStream input) throws IOException {
         BinaryReader reader = new BinaryReader(input);
+        BitReader bitReader = new BitReader(input);
         int uncompressedSize = reader.readVarUint();
         if (uncompressedSize == 0) return new byte[0];
         
         byte[] data = new byte[uncompressedSize];
-        Node nodeFromStream = Node.readFromStream(input);
+        Node nodeFromStream = Node.readFromStream(bitReader);
         
         if (nodeFromStream instanceof ByteNode bn) {
             for (int i = 0; i < uncompressedSize; i++) data[i] = bn.value;
@@ -94,7 +94,6 @@ public class HuffmanCoding extends Compression {
         }
         ConnectNode tree = (ConnectNode) nodeFromStream;
         
-        BitReader bitReader = new BitReader(input);
         for (int i = 0; i < uncompressedSize; i++) {
             Node node = tree;
             boolean bit;

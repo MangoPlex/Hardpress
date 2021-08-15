@@ -1,7 +1,8 @@
 package hardpress.algorithms.huffman;
 
 import java.io.IOException;
-import java.io.OutputStream;
+
+import hardpress.binary.BitWriter;
 
 public class ConnectNode extends Node {
     
@@ -17,10 +18,10 @@ public class ConnectNode extends Node {
     public int nodeOccurrences() { return off.nodeOccurrences() + on.nodeOccurrences(); }
 
     @Override
-    public void writeNodeData(OutputStream stream) throws IOException {
-        stream.write(0x01);
-        off.writeNodeData(stream);
-        on.writeNodeData(stream);
+    public void writeNodeData(BitWriter writer) throws IOException {
+        writer.writeBit(true);
+        off.writeNodeData(writer);
+        on.writeNodeData(writer);
     }
     
     @Override

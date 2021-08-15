@@ -1,8 +1,9 @@
 package hardpress.algorithms.huffman;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
+
+import hardpress.binary.BitWriter;
 
 public class ByteNode extends Node {
     
@@ -21,9 +22,9 @@ public class ByteNode extends Node {
     public int nodeOccurrences() { return occurrences; } 
 
     @Override
-    public void writeNodeData(OutputStream stream) throws IOException {
-        stream.write(0x00);
-        stream.write(Byte.toUnsignedInt(value));
+    public void writeNodeData(BitWriter writer) throws IOException {
+        writer.writeBit(false);
+        writer.writeByte(Byte.toUnsignedInt(value));
     }
     
     @Override

@@ -20,5 +20,19 @@ public class BitReader {
         }
         return (currentByte & (1 << (7 - (bitIndex++)))) != 0;
     }
+    
+    public int readBitAsInt() throws IOException {
+        if (bitIndex >= 8) {
+            bitIndex = 0;
+            currentByte = stream.read();
+        }
+        return (currentByte & (1 << (7 - (bitIndex++)))) != 0? 1 : 0;
+    }
+    
+    public int readByte() throws IOException {
+        return 
+            (readBitAsInt() << 7) | (readBitAsInt() << 6) | (readBitAsInt() << 5) | (readBitAsInt() << 4)
+          | (readBitAsInt() << 3) | (readBitAsInt() << 2) | (readBitAsInt() << 1) | readBitAsInt();
+    }
 
 }

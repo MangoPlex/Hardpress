@@ -24,6 +24,19 @@ public class BitWriter {
         for (int i = 0; i < bs.length; i++) writeBit(bs[i]);
     }
     
+    public void writeByte(int bv) throws IOException {
+        writeBits(
+            (bv & 0b10000000) != 0,
+            (bv & 0b01000000) != 0,
+            (bv & 0b00100000) != 0,
+            (bv & 0b00010000) != 0,
+            (bv & 0b00001000) != 0,
+            (bv & 0b00000100) != 0,
+            (bv & 0b00000010) != 0,
+            (bv & 0b00000001) != 0
+        );
+    }
+    
     public void flush() throws IOException {
         stream.write(currentByte);
         bitIndex = 0;
